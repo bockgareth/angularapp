@@ -3,6 +3,7 @@ import { Http } from '@angular/http';
 import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 import { AppError } from '../common/app-error';
+import { BadInputError } from '../common/bad-input';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +22,15 @@ export class DataService {
   }
 
   create(resource) {
-    return this.http.post(this.url, JSON.stringify(resource));
+    return this.http.post(this.url, JSON.stringify(resource))
+    .pipe(
+      catchError((error: Response) => {
+        if (error.status === 400)
+          return throwError(new BadInputError(error.json()));
+          
+        return throwError(new AppError(error.json()));
+      })
+    );
   }
 
   update(resource) {

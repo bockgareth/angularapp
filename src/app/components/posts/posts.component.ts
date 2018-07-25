@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { PostService } from '../../services/post.service';
 import { AppError } from '../../common/app-error';
+import { BadInputError } from '../../common/bad-input';
 
 @Component({
   selector: 'posts',
@@ -30,10 +31,17 @@ export class PostsComponent implements OnInit {
     input.value = '';
 
     this.service.create(post)
-      .subscribe(response => {
-        post['id'] = response.json().id;
-        this.posts.unshift(post);
-      });
+      .subscribe(
+        response => {
+          post['id'] = response.json().id;
+          this.posts.unshift(post);
+        },
+        (error: AppError) => {
+          if (error instanceof BadInputError)
+            console.log('Bad Input');
+          else 
+            console.log('An unexpected error occurred.', error);          
+        });
   }
 
   updatePost(post) {
