@@ -1,0 +1,9 @@
+<input #title (keyup.enter)="createPost(title)" placeholder="Title of new post" type="text" class="form-control">
+<ul class="list-group">
+  <li
+    *ngFor="let post of posts" 
+    class="list-group-item">
+    <button (click)="updatePost(post)" class="btn btn-primary btn-sm">Update</button>
+    {{ post.title }}
+  </li>
+</ul>
