@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { PostService } from '../../services/post.service';
+import { AppError } from '../../common/app-error';
 
 @Component({
   selector: 'posts',
@@ -13,10 +14,13 @@ export class PostsComponent implements OnInit {
 
   ngOnInit() {
     this.service.getAll()
-      .subscribe(response => {
-        this.posts = response.json();
-        console.log(this.posts);
-      });
+      .subscribe(
+        response => {
+          this.posts = response.json();
+        },
+        (error: AppError) => {
+          console.log('An unexpected error occurred.', error);
+        });
   }
 
   createPost(input: HTMLInputElement) {
@@ -32,8 +36,17 @@ export class PostsComponent implements OnInit {
       });
   }
 
-  updatePost() {
-    
+  updatePost(post) {
+    this.service.update(post)
+      .subscribe(response => { console.log(response.json()) });
+  }
+
+  deletePost(post) {
+    this.service.delete(post.id)
+      .subscribe(response => {
+        let index = this.posts.indexOf(post);
+        this.posts.splice(index, 1);
+      });
   }
 
 }
